@@ -50,7 +50,7 @@ object AlertApp {
     */
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf().setAppName("alter_app").setMaster("local[*]")
-    val ssc = new StreamingContext(conf, Seconds(15))
+    val ssc = new StreamingContext(conf, Seconds(5))
     //格式转换为样例类
     val inputDstream: InputDStream[ConsumerRecord[String, String]] = MyKafkaUtil.getKafkaStream(GmallConstant.KAFKA_TOPIC_EVENT, ssc)
 
@@ -67,7 +67,7 @@ object AlertApp {
     }
     eventInfoDstream.cache()
     //开窗口
-    val eventInfoWindowDstream: DStream[EventInfo] = eventInfoDstream.window(Seconds(300), Seconds(15))
+    val eventInfoWindowDstream: DStream[EventInfo] = eventInfoDstream.window(Seconds(300), Seconds(5))
     eventInfoWindowDstream.cache()
     //对同一mid分组
     val groupbyMidDstream: DStream[(String, Iterable[EventInfo])] = eventInfoWindowDstream.map(eventInfo => (eventInfo.mid, eventInfo)).groupByKey()
