@@ -56,7 +56,7 @@ object AlertApp {
         enentInfo
       }
     //开窗口
-    val eventInfoWindowDstream: DStream[EventInfo] = eventInfoDstream.window(Seconds(300), Seconds(10))
+    val eventInfoWindowDstream: DStream[EventInfo] = eventInfoDstream.window(Seconds(300), Seconds(15))
     //对同一mid分组
     val groupbyMidDstream: DStream[(String, Iterable[EventInfo])] = eventInfoWindowDstream.map(eventInfo => (eventInfo.mid, eventInfo)).groupByKey()
 

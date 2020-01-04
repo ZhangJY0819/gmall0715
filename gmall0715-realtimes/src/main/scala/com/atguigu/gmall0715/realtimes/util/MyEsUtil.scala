@@ -7,7 +7,7 @@ import io.searchbox.client.{JestClient, JestClientFactory}
 import io.searchbox.core.{Bulk, BulkResult, Index}
 
 object MyEsUtil {
-  private val ES_HOST = "http://hadoop1"
+  private val ES_HOST = "http://hadoop102"
   private val ES_HTTP_PORT = 9200
   private var factory:JestClientFactory = null
 
