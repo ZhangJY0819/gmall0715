@@ -11,65 +11,67 @@ import java.util.Random;
 
 public class JsonMocker {
 
-    int startupNum=100000;
-    int eventNum=200000 ;
+    int startupNum = 100000;
+    int eventNum = 200000;
 
-    RandomDate logDateUtil= null;
+    RandomDate logDateUtil = null;
 
 
-    RanOpt[] osOpts= {new RanOpt("ios",3),new RanOpt("andriod",7) };
-    RandomOptionGroup<String> osOptionGroup= new RandomOptionGroup(osOpts);
-    Date startTime= null;
-    Date endTime= null;
+    RanOpt[] osOpts = {new RanOpt("ios", 3), new RanOpt("andriod", 7)};
+    RandomOptionGroup<String> osOptionGroup = new RandomOptionGroup(osOpts);
+    Date startTime = null;
+    Date endTime = null;
 
-    RanOpt[] areaOpts= {new RanOpt("beijing",10),
-            new RanOpt("shanghai",10),new RanOpt("guangdong",20),new RanOpt("hebei",5),
-            new RanOpt("heilongjiang",5),new RanOpt("shandong",5),new RanOpt("tianjin",5),
-            new RanOpt("shan3xi",5),new RanOpt("shan1xi",5),new RanOpt("sichuan",5)
+    RanOpt[] areaOpts = {new RanOpt("beijing", 10),
+            new RanOpt("shanghai", 10), new RanOpt("guangdong", 20), new RanOpt("hebei", 5),
+            new RanOpt("heilongjiang", 5), new RanOpt("shandong", 5), new RanOpt("tianjin", 5),
+            new RanOpt("shan3xi", 5), new RanOpt("shan1xi", 5), new RanOpt("sichuan", 5)
     };
-    RandomOptionGroup<String>  areaOptionGroup= new RandomOptionGroup(areaOpts);
+    RandomOptionGroup<String> areaOptionGroup = new RandomOptionGroup(areaOpts);
 
-    String appId="gmall2019";
+    String appId = "gmall2019";
 
-    RanOpt[] vsOpts= {new RanOpt("1.2.0",50),new RanOpt("1.1.2",15),
-            new RanOpt("1.1.3",30),
-            new RanOpt("1.1.1",5)
-    };
-
-    RandomOptionGroup<String>  vsOptionGroup= new RandomOptionGroup(vsOpts);
-
-    RanOpt[] eventOpts= {new RanOpt("addFavor",10),new RanOpt("addComment",30),
-            new RanOpt("addCart",20), new RanOpt("clickItem",40)
+    RanOpt[] vsOpts = {new RanOpt("1.2.0", 50), new RanOpt("1.1.2", 15),
+            new RanOpt("1.1.3", 30),
+            new RanOpt("1.1.1", 5)
     };
 
-    RandomOptionGroup<String>  eventOptionGroup= new RandomOptionGroup(eventOpts);
+    RandomOptionGroup<String> vsOptionGroup = new RandomOptionGroup(vsOpts);
 
-    RanOpt[] channelOpts= {new RanOpt("xiaomi",10),new RanOpt("huawei",20),
-            new RanOpt("wandoujia",30), new RanOpt("360",20), new RanOpt("tencent",20)
-            , new RanOpt("baidu",10), new RanOpt("website",10)
+    //    RanOpt[] eventOpts= {new RanOpt("addFavor",10),new RanOpt("addComment",30),
+//            new RanOpt("addCart",20), new RanOpt("clickItem",40)
+//    };
+    RanOpt[] eventOpts = {new RanOpt("addFavor", 10), new RanOpt("addComment", 15),
+            new RanOpt("addCart", 20), new RanOpt("clickItem", 2), new RanOpt("coupon", 45)
+    };
+    RandomOptionGroup<String> eventOptionGroup = new RandomOptionGroup(eventOpts);
+
+    RanOpt[] channelOpts = {new RanOpt("xiaomi", 10), new RanOpt("huawei", 20),
+            new RanOpt("wandoujia", 30), new RanOpt("360", 20), new RanOpt("tencent", 20)
+            , new RanOpt("baidu", 10), new RanOpt("website", 10)
     };
 
-    RandomOptionGroup<String>  channelOptionGroup= new RandomOptionGroup(channelOpts);
+    RandomOptionGroup<String> channelOptionGroup = new RandomOptionGroup(channelOpts);
 
-    RanOpt[] quitOpts= {   new RanOpt(true,20),new RanOpt(false,80)};
+    RanOpt[] quitOpts = {new RanOpt(true, 20), new RanOpt(false, 80)};
 
-    RandomOptionGroup<Boolean>  isQuitGroup= new RandomOptionGroup(quitOpts);
+    RandomOptionGroup<Boolean> isQuitGroup = new RandomOptionGroup(quitOpts);
 
-    public JsonMocker( )  {
+    public JsonMocker() {
 
     }
 
-    public JsonMocker(String startTimeString ,String endTimeString,int startupNum,int eventNum) {
+    public JsonMocker(String startTimeString, String endTimeString, int startupNum, int eventNum) {
         try {
-            startTime= new SimpleDateFormat("yyyy-MM-dd").parse(startTimeString);
-            endTime= new SimpleDateFormat("yyyy-MM-dd").parse(endTimeString);
+            startTime = new SimpleDateFormat("yyyy-MM-dd").parse(startTimeString);
+            endTime = new SimpleDateFormat("yyyy-MM-dd").parse(endTimeString);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        logDateUtil= new RandomDate(startTime,endTime,startupNum+eventNum);
+        logDateUtil = new RandomDate(startTime, endTime, startupNum + eventNum);
     }
 
-    String initEventLog(String startLogJson){
+    String initEventLog(String startLogJson) {
             /*`type` string   COMMENT '日志类型',
              `mid` string COMMENT '设备唯一 表示',
             `uid` string COMMENT '用户标识',
@@ -83,33 +85,33 @@ public class JsonMocker {
             `ts` bigint COMMENT '时间',*/
 
         JSONObject startLog = JSON.parseObject(startLogJson);
-        String mid= startLog.getString("mid");
-        String uid=  startLog.getString("uid");
-        String os= startLog.getString("os");
-        String appid=this.appId;
-        String area=startLog.getString("area");
+        String mid = startLog.getString("mid");
+        String uid = startLog.getString("uid");
+        String os = startLog.getString("os");
+        String appid = this.appId;
+        String area = startLog.getString("area");
         String evid = eventOptionGroup.getRandomOpt().getValue();
-        int pgid = new Random().nextInt(50)+1;
-        int npgid = new Random().nextInt(50)+1;
+        int pgid = new Random().nextInt(50) + 1;
+        int npgid = new Random().nextInt(50) + 1;
         int itemid = new Random().nextInt(50);
         //  long ts= logDateUtil.getRandomDate().getTime();
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("type","event");
-        jsonObject.put("mid",mid);
-        jsonObject.put("uid",uid);
-        jsonObject.put("os",os);
-        jsonObject.put("appid",appid);
-        jsonObject.put("area",area);
-        jsonObject.put("evid",evid);
-        jsonObject.put("pgid",pgid);
-        jsonObject.put("npgid",npgid);
-        jsonObject.put("itemid",itemid);
-        return  jsonObject.toJSONString();
+        jsonObject.put("type", "event");
+        jsonObject.put("mid", mid);
+        jsonObject.put("uid", uid);
+        jsonObject.put("os", os);
+        jsonObject.put("appid", appid);
+        jsonObject.put("area", area);
+        jsonObject.put("evid", evid);
+        jsonObject.put("pgid", pgid);
+        jsonObject.put("npgid", npgid);
+        jsonObject.put("itemid", itemid);
+        return jsonObject.toJSONString();
     }
 
 
-    String initStartupLog( ){
+    String initStartupLog() {
             /*`type` string   COMMENT '日志类型',
              `mid` string COMMENT '设备唯一标识',
       `uid` string COMMENT '用户标识',
@@ -120,27 +122,26 @@ public class JsonMocker {
      `area` string COMMENT '城市' */
 
 
-        String mid= "mid_"+ RandomNum.getRandInt(1,500);
-        String uid=""+ RandomNum.getRandInt(1,500);
-        String os=osOptionGroup.getRandomOpt().getValue();
-        String appid=this.appId;
-        String area=areaOptionGroup.getRandomOpt().getValue();
+        String mid = "mid_" + RandomNum.getRandInt(1, 50);
+        String uid = "" + RandomNum.getRandInt(1, 50);
+        String os = osOptionGroup.getRandomOpt().getValue();
+        String appid = this.appId;
+        String area = areaOptionGroup.getRandomOpt().getValue();
         String vs = vsOptionGroup.getRandomOpt().getValue();
         //long ts= logDateUtil.getRandomDate().getTime();
-        String ch=os.equals("ios")?"appstore": channelOptionGroup.getRandomOpt().getValue();
-
+        String ch = os.equals("ios") ? "appstore" : channelOptionGroup.getRandomOpt().getValue();
 
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("type","startup");
-        jsonObject.put("mid",mid);
-        jsonObject.put("uid",uid);
-        jsonObject.put("os",os);
-        jsonObject.put("appid",appid);
-        jsonObject.put("area",area);
-        jsonObject.put("ch",ch);
-        jsonObject.put("vs",vs);
-        return  jsonObject.toJSONString();
+        jsonObject.put("type", "startup");
+        jsonObject.put("mid", mid);
+        jsonObject.put("uid", uid);
+        jsonObject.put("os", os);
+        jsonObject.put("appid", appid);
+        jsonObject.put("area", area);
+        jsonObject.put("ch", ch);
+        jsonObject.put("vs", vs);
+        return jsonObject.toJSONString();
     }
 
     public static void genLog() {
@@ -154,7 +155,7 @@ public class JsonMocker {
                 jsonMocker.sendLog(eventLog);
             }
             try {
-                Thread.sleep(20);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -163,11 +164,11 @@ public class JsonMocker {
 
     }
 
-    public void sendLog(String log)   {
+    public void sendLog(String log) {
         LogUploader.sendLogStream(log);
     }
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
         genLog();
     }
 

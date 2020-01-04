@@ -62,6 +62,18 @@ object MyEsUtil {
 
     close(jest)
   }
+//  def main(args: Array[String]): Unit = {
+//    val jest: JestClient = getClient
+//
+//    val index: Index = new Index.Builder(Stud("zhang3","zhang33")).index("gmall2019_stud").`type`("_doc").id("stu123").build()
+//    jest.execute(index)
+//
+//  }
+//
+//
+//  case class Stud(name:String ,nickname:String){
+//
+//  }
 
 
 }

@@ -1,12 +1,15 @@
 package com.atguigu.gmall0715.realtimes.app
 
+import java.text.SimpleDateFormat
 import java.util
+import java.util.Date
 
 import com.alibaba.fastjson.JSON
 import com.atguigu.gmall0715.common.constant.GmallConstant
 import com.atguigu.gmall0715.realtimes.util.{MyEsUtil, MyKafkaUtil}
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.spark.SparkConf
-import org.apache.spark.streaming.dstream.DStream
+import org.apache.spark.streaming.dstream.{DStream, InputDStream}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 import scala.util.control.Breaks
@@ -47,19 +50,28 @@ object AlertApp {
     */
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf().setAppName("alter_app").setMaster("local[*]")
-    val ssc = new StreamingContext(conf, Seconds(5))
+    val ssc = new StreamingContext(conf, Seconds(15))
     //格式转换为样例类
-    val eventInfoDstream: DStream[EventInfo] = MyKafkaUtil.getKafkaStream(GmallConstant.KAFKA_TOPIC_EVENT, ssc)
-      .map { record =>
-        val jsonstr: String = record.value()
-        val enentInfo: EventInfo = JSON.parseObject(jsonstr, classOf[EventInfo])
-        enentInfo
-      }
+    val inputDstream: InputDStream[ConsumerRecord[String, String]] = MyKafkaUtil.getKafkaStream(GmallConstant.KAFKA_TOPIC_EVENT, ssc)
+
+    val eventInfoDstream: DStream[EventInfo] = inputDstream.map { record =>
+      val jsonstr: String = record.value()
+      val eventInfo: EventInfo = JSON.parseObject(jsonstr, classOf[EventInfo])
+      val datetime = new Date(eventInfo.ts)
+      val formattor = new SimpleDateFormat("yyyy-MM-dd HH")
+      val datetimeStr: String = formattor.format(datetime)
+      val datetimeArr: Array[String] = datetimeStr.split(" ")
+      eventInfo.logDate = datetimeArr(0)
+      eventInfo.logHour = datetimeArr(1)
+      eventInfo
+    }
+    eventInfoDstream.cache()
     //开窗口
     val eventInfoWindowDstream: DStream[EventInfo] = eventInfoDstream.window(Seconds(300), Seconds(15))
+    eventInfoWindowDstream.cache()
     //对同一mid分组
     val groupbyMidDstream: DStream[(String, Iterable[EventInfo])] = eventInfoWindowDstream.map(eventInfo => (eventInfo.mid, eventInfo)).groupByKey()
-
+    groupbyMidDstream.cache()
     //判断预警
     //在一个设备内
     //  1.出现三次及三次以上的uid领取优惠券
